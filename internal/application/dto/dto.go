@@ -44,13 +44,13 @@ func NewCategoryDTO(category *domain.Category) *CategoryDTO {
 }
 
 type OperationDTO struct {
-	ID          uuid.UUID `json:"id"`
-	AccountID   uuid.UUID `json:"account_id"`
-	Type        string    `json:"type"`
-	Amount      int64     `json:"amount"`
-	Time        time.Time `json:"time"`
-	Description string    `json:"description"`
-	CategoryID  uuid.UUID `json:"category_id"`
+	ID          uuid.UUID  `json:"id"`
+	AccountID   uuid.UUID  `json:"account_id"`
+	Type        string     `json:"type"`
+	Amount      int64      `json:"amount"`
+	Time        time.Time  `json:"time"`
+	Description string     `json:"description"`
+	CategoryID  *uuid.UUID `json:"category_id"`
 }
 
 func NewOperationDTO(operation *domain.Operation) *OperationDTO {

@@ -22,7 +22,7 @@ func NewOperationRepo(db *pgxpool.Pool) *OperationRepo {
 
 func (r *OperationRepo) Get(ctx context.Context, id uuid.UUID) (*domain.Operation, error) {
 	query := `
-		SELECT id, account_id, type, amount, time, description, category_id, applied
+		SELECT id, account_id, type, amount, time, description, category_id
 		FROM operations
 		WHERE id = $1
 	`
@@ -49,9 +49,9 @@ func (r *OperationRepo) Get(ctx context.Context, id uuid.UUID) (*domain.Operatio
 
 func (r *OperationRepo) Create(ctx context.Context, operation *domain.Operation) (*domain.Operation, error) {
 	query := `
-		INSERT INTO operations (id, account_id, type, amount, time, description, category_id, applied)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-		RETURNING id, account_id, type, amount, time, description, category_id, applied
+		INSERT INTO operations (id, account_id, type, amount, time, description, category_id)
+		VALUES ($1, $2, $3, $4, $5, $6, $7)
+		RETURNING id, account_id, type, amount, time, description, category_id
 	`
 
 	err := r.db.QueryRow(ctx, query,
@@ -81,9 +81,9 @@ func (r *OperationRepo) Create(ctx context.Context, operation *domain.Operation)
 func (r *OperationRepo) Update(ctx context.Context, operation *domain.Operation) (*domain.Operation, error) {
 	query := `
 		UPDATE operations
-		SET account_id = $2, type = $3, amount = $4, time = $5, description = $6, category_id = $7, applied = $8
+		SET account_id = $2, type = $3, amount = $4, time = $5, description = $6, category_id = $7
 		WHERE id = $1
-		RETURNING id, account_id, type, amount, time, description, category_id, applied
+		RETURNING id, account_id, type, amount, time, description, category_id
 	`
 
 	err := r.db.QueryRow(ctx, query,
@@ -117,7 +117,7 @@ func (r *OperationRepo) Delete(ctx context.Context, id uuid.UUID) (*domain.Opera
 	query := `
 		DELETE FROM operations
 		WHERE id = $1
-		RETURNING id, account_id, type, amount, time, description, category_id, applied
+		RETURNING id, account_id, type, amount, time, description, category_id
 	`
 
 	var operation domain.Operation

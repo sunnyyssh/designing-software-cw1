@@ -11,18 +11,15 @@ import (
 
 type BankService struct {
 	accRepo storage.BankAccountRepo
-	catRepo storage.CategoryRepo
 	opRepo  storage.OperationRepo
 }
 
 func NewBankService(
 	repo storage.BankAccountRepo,
-	catRepo storage.CategoryRepo,
 	opRepo storage.OperationRepo,
 ) *BankService {
 	return &BankService{
 		accRepo: repo,
-		catRepo: catRepo,
 		opRepo:  opRepo,
 	}
 }
@@ -52,19 +49,6 @@ func (s *BankService) ApplyOperation(ctx context.Context, req ApplyOperationRequ
 
 	op, err := domain.ApplyOperation(acc, domain.OperationType(req.OperationType), req.Amount, "")
 	if err != nil {
-		return nil, err
-	}
-
-	catType, err := domain.ResolveCategoryType(op)
-	if err != nil {
-		return nil, err
-	}
-
-	cat, err := s.catRepo.GetByType(ctx, catType)
-	if err != nil {
-		return nil, err
-	}
-	if err := op.SetCategory(cat); err != nil {
 		return nil, err
 	}
 

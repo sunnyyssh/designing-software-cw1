@@ -24,7 +24,7 @@ type Operation struct {
 	Amount      int64
 	Time        time.Time
 	Description string
-	CategoryID  uuid.UUID
+	CategoryID  *uuid.UUID
 	applied     bool
 }
 
@@ -41,7 +41,7 @@ func newOperation(
 		Amount:      amount,
 		Time:        TimeFunc(),
 		Description: description,
-		CategoryID:  uuid.Nil,
+		CategoryID:  nil,
 	}, nil
 }
 
@@ -70,7 +70,7 @@ func (o *Operation) apply(acc *BankAccount) error {
 }
 
 func (o *Operation) SetCategory(cat *Category) error {
-	o.CategoryID = cat.ID
+	o.CategoryID = &cat.ID
 	return nil
 }
 
