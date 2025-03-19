@@ -17,7 +17,7 @@ type Category struct {
 
 func NewCategory(typ CategoryType, name string) (*Category, error) {
 	return &Category{
-		ID:   uuid.Nil,
+		ID:   uuid.New(),
 		Type: typ,
 		Name: name,
 	}, nil

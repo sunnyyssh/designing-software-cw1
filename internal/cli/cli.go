@@ -9,10 +9,8 @@ import (
 
 func CLI(svc *config.Services) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:           "cmdb",
-		Short:         "Official CMDB service CLI",
-		SilenceErrors: true,
-		SilenceUsage:  true,
+		Use:   "bankcli",
+		Short: "Bank accounting system CLI",
 	}
 	cmd.AddCommand(
 		CreateAccount(svc),

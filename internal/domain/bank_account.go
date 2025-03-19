@@ -16,7 +16,7 @@ func NewBankAccount(name string) (*BankAccount, error) {
 		return nil, ErrEmptyName
 	}
 	return &BankAccount{
-		ID:      uuid.Nil, // It should be set in the database creation
+		ID:      uuid.New(), // It should be set in the database creation
 		Name:    name,
 		Balance: 0,
 		Blocked: false,

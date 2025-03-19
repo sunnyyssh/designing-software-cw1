@@ -35,7 +35,7 @@ func newOperation(
 	description string,
 ) (*Operation, error) {
 	return &Operation{
-		ID:          uuid.Nil, // Should be set in DB
+		ID:          uuid.New(), // Should be set in DB
 		AccountID:   accID,
 		Type:        typ,
 		Amount:      amount,
