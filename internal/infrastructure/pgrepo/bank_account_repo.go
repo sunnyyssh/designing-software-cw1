@@ -45,6 +45,40 @@ func (r *BankAccountRepo) Get(ctx context.Context, id uuid.UUID) (*domain.BankAc
 	return &account, nil
 }
 
+func (r *BankAccountRepo) List(ctx context.Context) ([]domain.BankAccount, error) {
+	query := `
+		SELECT id, name, balance, blocked
+		FROM bank_accounts
+	`
+
+	rows, err := r.db.Query(ctx, query)
+	if err != nil {
+		return nil, fmt.Errorf("failed to list bank accounts: %w", err)
+	}
+	defer rows.Close()
+
+	var accounts []domain.BankAccount
+	for rows.Next() {
+		var account domain.BankAccount
+		err := rows.Scan(
+			&account.ID,
+			&account.Name,
+			&account.Balance,
+			&account.Blocked,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan bank account: %w", err)
+		}
+		accounts = append(accounts, account)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error after iterating rows: %w", err)
+	}
+
+	return accounts, nil
+}
+
 func (r *BankAccountRepo) Create(ctx context.Context, account *domain.BankAccount) (*domain.BankAccount, error) {
 	query := `
 		INSERT INTO bank_accounts (id, name, balance, blocked)

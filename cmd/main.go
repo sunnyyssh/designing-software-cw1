@@ -6,7 +6,6 @@ import (
 	"os"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/sunnyyssh/designing-software-cw1/internal/cli"
 	"github.com/sunnyyssh/designing-software-cw1/internal/config"
 )
 
@@ -28,5 +27,7 @@ func main() {
 	dbConf := config.NewDB(db)
 	svcConf := config.NewServices(dbConf)
 
-	cli.CLI(svcConf).Execute()
+	if err = config.CLI(svcConf).Execute(); err != nil {
+		log.Fatalf("Execution failed: %s", err)
+	}
 }

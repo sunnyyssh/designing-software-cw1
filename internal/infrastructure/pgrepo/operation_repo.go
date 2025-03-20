@@ -47,6 +47,43 @@ func (r *OperationRepo) Get(ctx context.Context, id uuid.UUID) (*domain.Operatio
 	return &operation, nil
 }
 
+func (r *OperationRepo) List(ctx context.Context) ([]domain.Operation, error) {
+	query := `
+		SELECT id, account_id, type, amount, time, description, category_id
+		FROM operations
+	`
+
+	rows, err := r.db.Query(ctx, query)
+	if err != nil {
+		return nil, fmt.Errorf("failed to list operations: %w", err)
+	}
+	defer rows.Close()
+
+	var operations []domain.Operation
+	for rows.Next() {
+		var operation domain.Operation
+		err := rows.Scan(
+			&operation.ID,
+			&operation.AccountID,
+			&operation.Type,
+			&operation.Amount,
+			&operation.Time,
+			&operation.Description,
+			&operation.CategoryID,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan operation: %w", err)
+		}
+		operations = append(operations, operation)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error after iterating rows: %w", err)
+	}
+
+	return operations, nil
+}
+
 func (r *OperationRepo) Create(ctx context.Context, operation *domain.Operation) (*domain.Operation, error) {
 	query := `
 		INSERT INTO operations (id, account_id, type, amount, time, description, category_id)

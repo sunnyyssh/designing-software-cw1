@@ -3,11 +3,15 @@ package config
 import "github.com/sunnyyssh/designing-software-cw1/internal/application/services"
 
 type Services struct {
-	BankService services.BankService
+	BankAccountService *services.BankAccountService
+	OperationService   *services.OperationService
+	CategoryService    *services.CategoryService
 }
 
 func NewServices(dbConf *DB) *Services {
 	return &Services{
-		BankService: *services.NewBankService(dbConf.BankAccountRepo, dbConf.OperationRepo),
+		BankAccountService: services.NewBankAccountService(dbConf.BankAccountRepo),
+		OperationService:   services.NewOperationService(dbConf.BankAccountRepo, dbConf.OperationRepo),
+		CategoryService:    services.NewCategoryService(dbConf.CategoryRepo),
 	}
 }

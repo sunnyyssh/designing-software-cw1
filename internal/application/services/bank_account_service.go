@@ -9,22 +9,39 @@ import (
 	"github.com/sunnyyssh/designing-software-cw1/internal/domain"
 )
 
-type BankService struct {
+type BankAccountService struct {
 	accRepo storage.BankAccountRepo
-	opRepo  storage.OperationRepo
 }
 
-func NewBankService(
-	repo storage.BankAccountRepo,
-	opRepo storage.OperationRepo,
-) *BankService {
-	return &BankService{
+func NewBankAccountService(repo storage.BankAccountRepo) *BankAccountService {
+	return &BankAccountService{
 		accRepo: repo,
-		opRepo:  opRepo,
 	}
 }
 
-func (s *BankService) CreateAccount(ctx context.Context, name string) (*dto.BankAccountDTO, error) {
+func (s *BankAccountService) Get(ctx context.Context, id uuid.UUID) (*dto.BankAccountDTO, error) {
+	acc, err := s.accRepo.Get(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return dto.NewBankAccountDTO(acc), nil
+}
+
+func (s *BankAccountService) List(ctx context.Context) ([]dto.BankAccountDTO, error) {
+	cats, err := s.accRepo.List(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	resp := make([]dto.BankAccountDTO, 0, len(cats))
+	for _, c := range cats {
+		resp = append(resp, *dto.NewBankAccountDTO(&c))
+	}
+	return resp, nil
+}
+
+func (s *BankAccountService) CreateAccount(ctx context.Context, name string) (*dto.BankAccountDTO, error) {
 	acc, err := domain.NewBankAccount(name)
 	if err != nil {
 		return nil, err
@@ -35,30 +52,50 @@ func (s *BankService) CreateAccount(ctx context.Context, name string) (*dto.Bank
 	return dto.NewBankAccountDTO(acc), err
 }
 
-type ApplyOperationRequest struct {
-	AccountID     uuid.UUID
-	Amount        int64
-	OperationType string
+func (s *BankAccountService) Block(ctx context.Context, id uuid.UUID) (*dto.BankAccountDTO, error) {
+	acc, err := s.accRepo.Get(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := acc.Block(); err != nil {
+		return nil, err
+	}
+
+	if acc, err = s.accRepo.Update(ctx, acc); err != nil {
+		return nil, err
+	}
+	return dto.NewBankAccountDTO(acc), err
 }
 
-func (s *BankService) ApplyOperation(ctx context.Context, req ApplyOperationRequest) (*dto.BankAccountDTO, error) {
-	acc, err := s.accRepo.Get(ctx, req.AccountID)
+func (s *BankAccountService) Unblock(ctx context.Context, id uuid.UUID) (*dto.BankAccountDTO, error) {
+	acc, err := s.accRepo.Get(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
-	op, err := domain.ApplyOperation(acc, domain.OperationType(req.OperationType), req.Amount, "")
+	if err := acc.Unblock(); err != nil {
+		return nil, err
+	}
+
+	if acc, err = s.accRepo.Update(ctx, acc); err != nil {
+		return nil, err
+	}
+	return dto.NewBankAccountDTO(acc), err
+}
+
+func (s *BankAccountService) Delete(ctx context.Context, id uuid.UUID) (*dto.BankAccountDTO, error) {
+	acc, err := s.accRepo.Get(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
-	acc, err = s.accRepo.Update(ctx, acc)
-	if err != nil {
+	if err := acc.Delete(); err != nil {
 		return nil, err
 	}
-	_, err = s.opRepo.Create(ctx, op)
-	if err != nil {
+
+	if acc, err = s.accRepo.Delete(ctx, acc.ID); err != nil {
 		return nil, err
 	}
-	return dto.NewBankAccountDTO(acc), nil
+	return dto.NewBankAccountDTO(acc), err
 }

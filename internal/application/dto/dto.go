@@ -8,10 +8,10 @@ import (
 )
 
 type BankAccountDTO struct {
-	ID      uuid.UUID
-	Name    string
-	Balance int64
-	Blocked bool
+	ID      uuid.UUID `json:"id"`
+	Name    string    `json:"name"`
+	Balance int64     `json:"balance"`
+	Blocked bool      `json:"blocked"`
 }
 
 func NewBankAccountDTO(dom *domain.BankAccount) *BankAccountDTO {

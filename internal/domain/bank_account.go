@@ -38,3 +38,10 @@ func (a *BankAccount) Unblock() error {
 	a.Blocked = false
 	return nil
 }
+
+func (a *BankAccount) Delete() error {
+	if a.Balance != 0 {
+		return ErrAccountHasPositiveBalance
+	}
+	return nil
+}

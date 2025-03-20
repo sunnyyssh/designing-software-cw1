@@ -16,6 +16,12 @@ type Category struct {
 }
 
 func NewCategory(typ CategoryType, name string) (*Category, error) {
+	if typ == "" {
+		return nil, ErrEmptyType
+	}
+	if name == "" {
+		return nil, ErrEmptyName
+	}
 	return &Category{
 		ID:   uuid.New(),
 		Type: typ,

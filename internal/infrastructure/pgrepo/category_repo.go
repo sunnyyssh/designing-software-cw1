@@ -43,27 +43,37 @@ func (r *CategoryRepo) Get(ctx context.Context, id uuid.UUID) (*domain.Category,
 	return &category, nil
 }
 
-func (r *CategoryRepo) GetByType(ctx context.Context, categoryType domain.CategoryType) (*domain.Category, error) {
+func (r *CategoryRepo) List(ctx context.Context) ([]domain.Category, error) {
 	query := `
 		SELECT id, type, name
 		FROM categories
-		WHERE type = $1
 	`
 
-	var category domain.Category
-	err := r.db.QueryRow(ctx, query, categoryType).Scan(
-		&category.ID,
-		&category.Type,
-		&category.Name,
-	)
+	rows, err := r.db.Query(ctx, query)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, storage.ErrNotFound
+		return nil, fmt.Errorf("failed to list categories: %w", err)
+	}
+	defer rows.Close()
+
+	var categories []domain.Category
+	for rows.Next() {
+		var category domain.Category
+		err := rows.Scan(
+			&category.ID,
+			&category.Type,
+			&category.Name,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan category: %w", err)
 		}
-		return nil, fmt.Errorf("failed to get category by type: %w", err)
+		categories = append(categories, category)
 	}
 
-	return &category, nil
+	if err := rows.Err(); err != nil {
+		return nil, fmt.Errorf("error after iterating rows: %w", err)
+	}
+
+	return categories, nil
 }
 
 func (r *CategoryRepo) Create(ctx context.Context, category *domain.Category) (*domain.Category, error) {
