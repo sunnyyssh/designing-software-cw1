@@ -49,5 +49,5 @@ I created `NewCategory()`, `NewBankAccount` functions to implement creating doma
 7. Error as value Pattern \
 As all Go code I defined errors as `error` values which allow me to handle them appropriately
 
-# SOLID, GRASP
-I am willing to bet, there is no any principles that I've violated
+# SOLID, GRASP, Clean Architecture
+I hope, there is no principles that I've violated. Code is structured in Clean Architecture style, dependencies are center-forwarded as it should be. 
