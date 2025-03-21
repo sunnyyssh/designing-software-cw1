@@ -50,4 +50,4 @@ I created `NewCategory()`, `NewBankAccount` functions to implement creating doma
 As all Go code I defined errors as `error` values which allow me to handle them appropriately
 
 # SOLID, GRASP, Clean Architecture
-I hope, there is no principles that I've violated. Code is structured in Clean Architecture style, dependencies are center-forwarded as it should be. 
+I hope, there are no principles that I've violated. Code is structured in Clean Architecture style, dependencies are center-forwarded as it should be. 
